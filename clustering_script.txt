@@ -1,0 +1,23 @@
+library(MASS)
+library(WGCNA)
+library(ape)
+library(dynamicTreeCut)
+
+mytree <- read.tree(file = "/Users/julianzaugg/Documents/University/Phd/Projects/NES/Results/JTT/Results/tree.txt")
+
+#dist object for dm
+#PHYLO DISTANCE MATRIX READ IN! Pass matrix to cutreeDynamic(method = "adaptive")
+#mat = read.table("Results/distance_matrix_full.txt", fill=T)
+#mydist <- dist(mat)
+
+myhclust <- as.hclust(chronos(mytree))
+groups <- cutreeDynamic(myhclust, deepSplit = 4, method = "tree", minClusterSize = 3)
+#groups <- cutreeDynamicTree(myhclust, deepSplit = 4, method = "tree", minModuleSize = 3)
+#visualise
+png("out.png", width = 8000, height = 1000)
+plotDendroAndColors(myhclust,labels2colors(groups))
+dev.off()
+setNames(unlist(myhclust["labels"]), groups)
+test <- data.frame(unlist(myhclust["labels"]), groups)
+test <- setNames(test, c("Names", "Groups"))
+write.matrix(test, sep ="\t", file = "NES_JTT_test.txt")
